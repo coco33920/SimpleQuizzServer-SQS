@@ -111,6 +111,16 @@ public class STFCQuizzGenerator {
                 return "true";
             return "false";
         });
+        get("fetch_quizz", (request, response) -> {
+            if (!request.queryParams().contains("uuid"))
+                return "Error no uuid";
+            String uuid = request.queryParams("uuid");
+            Quizz q = wrapper.fetchQuizz(uuid);
+            if (q == null) {
+                return "Error quizz not found";
+            }
+            return new Gson().toJson(q);
+        });
         get("get_questions", (request, response) -> new Gson().toJson(DatabaseWrapper.categories));
         get("get_categories", (request, response) -> new Gson().toJson(DatabaseWrapper.categoriesList));
     }

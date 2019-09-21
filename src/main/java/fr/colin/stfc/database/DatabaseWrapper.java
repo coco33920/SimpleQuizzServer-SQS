@@ -1,11 +1,13 @@
 package fr.colin.stfc.database;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import fr.colin.stfc.objects.Category;
 import fr.colin.stfc.objects.Questions;
 import fr.colin.stfc.objects.Quizz;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Type;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -59,6 +61,25 @@ public class DatabaseWrapper {
         db.update(query);
         return quizz;
     }
+
+    public Quizz fetchQuizz(String uuid) {
+
+        Type questions = new TypeToken<ArrayList<Questions>>() {
+        }.getType();
+        ResultSet rs = db.getResult("SELECT * FROM quizzs WHERE UUID='" + uuid + "'");
+        while (true) {
+            try {
+                if (!rs.next()) break;
+                return new Quizz(new Gson().fromJson(rs.getString("questions"), questions), rs.getString("category"), rs.getString("uuid"), Long.parseLong(rs.getString("date")));
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+
+    }
+
 
     public static ArrayList pickRandomElements(ArrayList e, int noe) {
         ArrayList es = (ArrayList) e.clone();
