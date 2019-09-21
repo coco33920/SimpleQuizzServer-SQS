@@ -3,6 +3,7 @@ package fr.colin.stfc.database;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import fr.colin.stfc.objects.Category;
+import fr.colin.stfc.objects.CompletedQuizz;
 import fr.colin.stfc.objects.Questions;
 import fr.colin.stfc.objects.Quizz;
 import org.apache.commons.lang3.StringUtils;
@@ -60,6 +61,10 @@ public class DatabaseWrapper {
                 ""), quizz.getDate());
         db.update(query);
         return quizz;
+    }
+
+    public void addScore(double score, String user, CompletedQuizz quizz) {
+        db.update(String.format("INSERT INTO scores(quizzuuid,score,date,user) VALUES('%s','%s','%s','%s')", quizz.getQuizz().getUuid(), score, quizz.getQuizz().getDate(), user));
     }
 
     public Quizz fetchQuizz(String uuid) {

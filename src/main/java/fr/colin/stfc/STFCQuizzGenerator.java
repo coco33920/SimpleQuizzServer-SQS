@@ -5,10 +5,26 @@ import com.google.gson.Gson;
 import fr.colin.stfc.configuration.Config;
 import fr.colin.stfc.database.Database;
 import fr.colin.stfc.database.DatabaseWrapper;
+import fr.colin.stfc.objects.CompletedQuizz;
 import fr.colin.stfc.objects.Questions;
 import fr.colin.stfc.objects.Quizz;
+import org.apache.commons.io.FileUtils;
+import org.simplejavamail.email.Email;
+import org.simplejavamail.email.EmailBuilder;
+import org.simplejavamail.mailer.Mailer;
+import org.simplejavamail.mailer.MailerBuilder;
+import org.simplejavamail.mailer.config.TransportStrategy;
 
+import javax.activation.FileDataSource;
+import javax.mail.Message;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 
 import static spark.Spark.*;
 
@@ -17,6 +33,9 @@ public class STFCQuizzGenerator {
     private static Database database;
     private static DatabaseWrapper wrapper;
     private static String TOKEN;
+    public static SimpleDateFormat fullDate = new SimpleDateFormat("dd/MM/YYYY HH:mm:ss");
+    private static Mailer mailer;
+    private static String name;
 
     public static void main(String[] args) throws SQLException {
         Config c = Config.getConfig();
@@ -26,6 +45,12 @@ public class STFCQuizzGenerator {
         port(6767);
         setupRoutes();
         wrapper.loadAllQuestions();
+        mailer = MailerBuilder
+                .withSMTPServer(c.getSMTP_SERVER(), c.getPORT(), c.getUSERNAME(), c.getPASSWORD())
+                .withTransportStrategy(TransportStrategy.SMTP_TLS)
+                .buildMailer();
+        mailer.testConnection();
+        name = c.getUSERNAME();
     }
 
 
@@ -121,8 +146,46 @@ public class STFCQuizzGenerator {
             }
             return new Gson().toJson(q);
         });
+        post("send_completed_quizz", (request, response) -> {
+            if (!request.queryParams().contains("dest"))
+                return "Error no receiver";
+            String rec = request.queryParams("dest");
+            String s = request.body();
+            CompletedQuizz sd = new Gson().fromJson(s, CompletedQuizz.class);
+            sd.transformToPDF(rec);
+
+            Email email = EmailBuilder.startingBlank()
+                    .from("SQS Quizz", name)
+                    .to("SQS Quizz", rec)
+                    .withSubject("Quizz Complété : Feuille de réponses")
+                    .withAttachment("quizz.pdf", new FileDataSource(System.getProperty("user.home") + "/completedQuizz" + sd.getQuizz().getUuid() + ".pdf"))
+                    .withPlainText("Quizz Complété")
+                    .buildEmail();
+
+
+            Thread thread = new Thread(() -> {
+                System.out.println("Start Mailing Thread");
+                ;
+                mailer.sendMail(email);
+                try {
+                    FileUtils.forceDelete(new File(System.getProperty("user.home") + "/completedQuizz" + sd.getQuizz().getUuid() + ".pdf"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            thread.start();
+
+            return "Success";
+        });
         get("get_questions", (request, response) -> new Gson().toJson(DatabaseWrapper.categories));
         get("get_categories", (request, response) -> new Gson().toJson(DatabaseWrapper.categoriesList));
     }
 
+    public static Database getDatabase() {
+        return database;
+    }
+
+    public static DatabaseWrapper getWrapper() {
+        return wrapper;
+    }
 }
