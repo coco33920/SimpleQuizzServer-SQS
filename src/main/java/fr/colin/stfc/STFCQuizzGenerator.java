@@ -34,20 +34,20 @@ public class STFCQuizzGenerator {
         get("/", (request, response) -> "Hello World");
         get("/request_quizz", (request, response) -> {
             if (!request.queryParams().contains("category") || !request.queryParams().contains("noq"))
-                return "Error";
+                return "Error not enough arguments";
             String category = request.queryParams("category");
             String numberOfQuestion = request.queryParams("noq");
             int noq;
             try {
                 noq = Integer.parseInt(numberOfQuestion);
             } catch (Exception e) {
-                return "Error";
+                return "Error parsing number of question";
             }
             Quizz q;
             try {
                 q = wrapper.makeRandomQuizz(category, noq);
             } catch (Exception e) {
-                return "Error";
+                return "Error with quizz";
             }
             return new Gson().toJson(q);
         });

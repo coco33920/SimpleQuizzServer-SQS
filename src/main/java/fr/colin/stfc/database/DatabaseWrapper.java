@@ -1,5 +1,6 @@
 package fr.colin.stfc.database;
 
+import com.google.gson.Gson;
 import fr.colin.stfc.objects.Category;
 import fr.colin.stfc.objects.Questions;
 import fr.colin.stfc.objects.Quizz;
@@ -46,11 +47,16 @@ public class DatabaseWrapper {
     }
 
     public Quizz makeRandomQuizz(String category, int noq) throws Exception {
-        if (!categories.containsKey(category))
+        if (!categories.containsKey(category)) {
+            System.out.println("do not exist");
             throw new Exception();
+        }
         ArrayList<Questions> q = categories.get(category);
         ArrayList<Questions> randomQuestion = pickRandomElements(q, noq);
-        Quizz quizz = new Quizz(randomQuestion, category);
+        Quizz quizz = new Quizz(randomQuestion, category, UUID.randomUUID().toString().split("-")[0].toUpperCase(), System.currentTimeMillis());
+        String query = String.format("INSERT INTO quizzs(uuid,category,questions,answers,date) VALUES('%s','%s','%s','%s','%s')", quizz.getUuid(), quizz.getCategory(), new Gson().toJson(quizz.getQuestions()).replace("\"", "\\\""), new Gson().toJson(Quizz.arrayOfQuestionToAnswer(quizz.getQuestions())).replace("\"", "\\\"" +
+                ""), quizz.getDate());
+        db.update(query);
         return quizz;
     }
 

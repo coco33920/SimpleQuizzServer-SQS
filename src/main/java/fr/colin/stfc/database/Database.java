@@ -94,7 +94,7 @@ public class Database {
             sts.executeUpdate();
             sts.close();
         } catch (SQLException e) {
-            throw new RuntimeException(e.getMessage());
+            e.printStackTrace();
         }
     }
 
