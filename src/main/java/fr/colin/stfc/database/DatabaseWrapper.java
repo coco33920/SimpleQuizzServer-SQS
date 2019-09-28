@@ -114,11 +114,11 @@ public class DatabaseWrapper {
 
     public void removeCategory(String uuid) {
         db.update("DELETE FROM questions WHERE category_uuid='" + uuid + "'");
-        db.update("DELETE FROM category WHERE uuid='" + uuid + "'");
+        db.update("DELETE FROM categories WHERE uuid='" + uuid + "'");
     }
 
     public void addQuestion(String title, String content, String answer, String category) {
-        db.update(String.format("INSERT INTO questions(uuid,title,content,answer,category_uuid) VALUES('%s','%s','%s',%s',%s')", UUID.randomUUID().toString(), title, content, answer, category));
+        db.update(String.format("INSERT INTO questions(uuid,title,content,answer,category_uuid) VALUES('%s','%s','%s','%s','%s')", UUID.randomUUID().toString(), title, content, answer, category));
     }
 
 

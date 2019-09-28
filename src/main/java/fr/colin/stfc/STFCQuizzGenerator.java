@@ -2,9 +2,11 @@ package fr.colin.stfc;
 
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import fr.colin.stfc.configuration.Config;
 import fr.colin.stfc.database.Database;
 import fr.colin.stfc.database.DatabaseWrapper;
+import fr.colin.stfc.objects.Category;
 import fr.colin.stfc.objects.CompletedQuizz;
 import fr.colin.stfc.objects.Questions;
 import fr.colin.stfc.objects.Quizz;
@@ -23,8 +25,10 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import static spark.Spark.*;
 
@@ -106,6 +110,24 @@ public class STFCQuizzGenerator {
             wrapper.loadAllQuestions();
             return "Success";
         });
+
+        post("add_question_bulk", (request, response) -> {
+            if (!request.queryParams().contains("token"))
+                return "Error";
+            String token = request.queryParams("token");
+            if (!token.equalsIgnoreCase(TOKEN))
+                return "Token Invalid";
+            String r = request.body();
+            Type ts = new TypeToken<ArrayList<Questions>>() {
+            }.getType();
+            ArrayList<Questions> qs = new Gson().fromJson(r, ts);
+            for (Questions q : qs) {
+                wrapper.addQuestion(q.getTitle(), q.getContent(), q.getAnswer(), q.getCategory_uuid());
+            }
+            wrapper.loadAllQuestions();
+            return "Success";
+        });
+
         get("remove_question", (request, response) -> {
             if (!request.queryParams().contains("token") || !request.queryParams().contains("uuid"))
                 return "Error";
@@ -128,11 +150,43 @@ public class STFCQuizzGenerator {
             wrapper.loadAllQuestions();
             return "Success";
         });
+        post("remove_category_bulk", (request, response) -> {
+            if (!request.queryParams().contains("token"))
+                return "Error no token";
+            String token = request.queryParams("token");
+            if (!token.equalsIgnoreCase(TOKEN))
+                return "Token Invalid";
+            Type ts = new TypeToken<ArrayList<String>>() {
+            }.getType();
+            String s = request.body();
+            ArrayList<String> ser = new Gson().fromJson(s, ts);
+            for (String cat : ser) {
+                getWrapper().removeCategory(cat);
+            }
+            getWrapper().loadAllQuestions();
+            return "Success";
+        });
+        post("remove_question_bulk", (request, response) -> {
+            if (!request.queryParams().contains("token"))
+                return "Error no token";
+            String token = request.queryParams("token");
+            if (!token.equalsIgnoreCase(TOKEN))
+                return "Token Invalid";
+            Type ts = new TypeToken<ArrayList<String>>() {
+            }.getType();
+            String s = request.body();
+            ArrayList<String> ser = new Gson().fromJson(s, ts);
+            for (String cat : ser) {
+                getWrapper().removeQuestion(cat);
+            }
+            getWrapper().loadAllQuestions();
+            return "Success";
+        });
         get("check_token", (request, response) -> {
             if (!request.queryParams().contains("token"))
                 return "false";
             String token = request.queryParams("token");
-            if (!token.equalsIgnoreCase(TOKEN))
+            if (token.equalsIgnoreCase(TOKEN))
                 return "true";
             return "false";
         });
