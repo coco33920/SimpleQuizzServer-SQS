@@ -19,8 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.SQLException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Random;
 
 import static spark.Spark.*;
 
@@ -47,6 +50,22 @@ public class STFCQuizzGenerator {
                 .buildMailer();
         mailer.testConnection();
         name = c.getUSERNAME();
+        /*long date = System.currentTimeMillis();
+        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy 00:00:00", Locale.ENGLISH);
+        long l2 = format.parse(format.format(date), new ParsePosition(0)).getTime();
+        System.out.println(l2);
+        for (int i = 0; i < 24; i++) {
+
+            l2 += (1000 * 3600 * i) + 1;
+            System.out.println(l2);
+            String query = String.format("INSERT INTO quizzs(uuid,category,questions,answers,date) VALUES('%s','%s','%s','%s','%s')", "SDF", "quizz.getCategory()", "", "", l2);
+            l2 = format.parse(format.format(date), new ParsePosition(0)).getTime();
+            int times = new Random().nextInt(10);
+            for (int t = 0; t < times; t++) {
+                getDatabase().update(query);
+            }
+        }*/
+
     }
 
 
