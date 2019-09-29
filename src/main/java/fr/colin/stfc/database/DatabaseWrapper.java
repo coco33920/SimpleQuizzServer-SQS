@@ -2,10 +2,7 @@ package fr.colin.stfc.database;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import fr.colin.stfc.objects.Category;
-import fr.colin.stfc.objects.CompletedQuizz;
-import fr.colin.stfc.objects.Questions;
-import fr.colin.stfc.objects.Quizz;
+import fr.colin.stfc.objects.*;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Type;
@@ -129,4 +126,67 @@ public class DatabaseWrapper {
     public Database getDb() {
         return db;
     }
+
+    public ArrayList<long[]> periods(long start, long end, long i) {
+        ArrayList<long[]> periods = new ArrayList<>();
+        int s = 0;
+        while (true) {
+            boolean brea = false;
+            long n = (start + i * s + 1);
+            long e = n + (i - 1);
+            if (e >= end) {
+                e = end;
+                brea = true;
+            }
+            periods.add(new long[]{n, e});
+            if (brea)
+                break;
+            s++;
+        }
+        return periods;
+    }
+
+    public ArrayList<ArrayList<Scores>> fetchScoreData(RequestFetchQuizzs quizzs) throws SQLException {
+
+        long start = quizzs.getStart();
+        long end = quizzs.getEnd();
+        long i = quizzs.getInterval();
+
+        ArrayList<long[]> periods = periods(start, end, i);
+        ArrayList<ArrayList<Scores>> scores = new ArrayList<>();
+        for (long[] l : periods) {
+            ArrayList<Scores> scores1 = new ArrayList<>();
+            ResultSet rs = db.getResult("SELECT * FROM scores WHERE date BETWEEN " + l[0] + " AND " + l[1]);
+            while (rs.next()) {
+                scores1.add(new Scores(rs.getString("quizzuuid"), rs.getDouble("score"), rs.getLong("date"), rs.getString("user")));
+            }
+            scores.add(scores1);
+        }
+
+        return scores;
+    }
+
+    public ArrayList<ArrayList<Quizz>> fetchQuizzData(RequestFetchQuizzs quizzs) throws SQLException {
+        ArrayList<ArrayList<Quizz>> data = new ArrayList<>();
+
+        long start = quizzs.getStart();
+        long end = quizzs.getEnd();
+        long i = quizzs.getInterval();
+
+        ArrayList<long[]> periods = periods(start, end, i);
+        for (long[] l : periods) {
+            ArrayList<Quizz> quizzes = new ArrayList<>();
+            ResultSet rs = db.getResult("SELECT * FROM quizzs WHERE date BETWEEN " + l[0] + " AND " + l[1]);
+            while (rs.next()) {
+                quizzes.add(new Quizz(new Gson().fromJson(rs.getString("questions"), new TypeToken<ArrayList<Questions>>() {
+                }.getType()), rs.getString("category"), rs.getString("uuid"), rs.getLong("date")));
+            }
+            data.add(quizzes);
+        }
+        return data;
+
+    }
+
+
 }
+

@@ -6,10 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import fr.colin.stfc.configuration.Config;
 import fr.colin.stfc.database.Database;
 import fr.colin.stfc.database.DatabaseWrapper;
-import fr.colin.stfc.objects.Category;
-import fr.colin.stfc.objects.CompletedQuizz;
-import fr.colin.stfc.objects.Questions;
-import fr.colin.stfc.objects.Quizz;
+import fr.colin.stfc.objects.*;
 import org.apache.commons.io.FileUtils;
 import org.simplejavamail.email.Email;
 import org.simplejavamail.email.EmailBuilder;
@@ -18,11 +15,6 @@ import org.simplejavamail.mailer.MailerBuilder;
 import org.simplejavamail.mailer.config.TransportStrategy;
 
 import javax.activation.FileDataSource;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -200,6 +192,21 @@ public class STFCQuizzGenerator {
             }
             return new Gson().toJson(q);
         });
+
+        post("fetch_quizz_data", (request, response) -> {
+            String r = request.body();
+            RequestFetchQuizzs quizzs = new Gson().fromJson(r, RequestFetchQuizzs.class);
+            ArrayList<ArrayList<Scores>> scores = getWrapper().fetchScoreData(quizzs);
+            return new Gson().toJson(scores);
+        });
+
+        post("fetch_quizzs", (request, response) -> {
+            String r = request.body();
+            RequestFetchQuizzs quizzs = new Gson().fromJson(r, RequestFetchQuizzs.class);
+            ArrayList<ArrayList<Quizz>> qu = getWrapper().fetchQuizzData(quizzs);
+            return new Gson().toJson(qu);
+        });
+
         post("send_completed_quizz", (request, response) -> {
             if (!request.queryParams().contains("dest"))
                 return "Error no receiver";

@@ -79,8 +79,7 @@ public class CompletedQuizz {
                     document.newPage();
                     y = 830;
                 }
-                ArrayList<Phrase> question = new ArrayList<>();
-                if (quizz.getQuestions().get(i).getContent().length() > 123) {
+                if (quizz.getQuestions().get(i).getContent().length() > 109) {
                     Questions q = quizz.getQuestions().get(i);
                     String content = q.getContent();
                     String patern = "(?<=\\G";
@@ -110,21 +109,71 @@ public class CompletedQuizz {
                     y -= 6;
                 }
                 y -= 4;
-                ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, new Phrase("Réponse donnée : " + answers.get(i), little), x, y, 0);
-                y -= 6;
+                if (answers.get(i).length() > 106) {
+                    String answer = answers.get(i);
+                    String patern = "(?<=\\G";
+                    for (int sd = 0; sd < 107; sd += 1) {
+                        patern += ".";
+                    }
+                    patern += ")";
+                    String f1 = answer.split(patern)[0];
+                    answer = answer.substring(107);
+                    String first = "Réponse donnée : " + f1;
+                    ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(first, little), x, y, 0);
+                    y -= 6;
+                    String pattern = "(?<=\\G";
+                    for (int s = 0; s < 124; s += 4) {
+                        pattern += "....";
+                    }
+                    pattern += ")";
+                    String[] t = answer.split(pattern);
+                    for (String ts : t) {
+                        ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(ts, little), x, y, 0);
+                        y -= 6;
+                    }
+                } else {
+                    ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, new Phrase("Réponse donnée : " + answers.get(i), little), x, y, 0);
+                    y -= 6;
+                }
                 String a = quizz.getQuestions().get(i).getAnswer();
                 Phrase s;
                 if (a.contains("Bonne Réponse ! +1 Point")) {
                     s = new Phrase(a, littlecolor);
+                    ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, s, x, y, 0);
                 } else {
-                    s = new Phrase("Réponse attendue : " + quizz.getQuestions().get(i).getAnswer(), little);
+                    if (quizz.getQuestions().get(i).getAnswer().length() > 104) {
+                        String answer = quizz.getQuestions().get(i).getAnswer();
+                        String patern = "(?<=\\G";
+                        for (int sd = 0; sd < 107; sd += 1) {
+                            patern += ".";
+                        }
+                        patern += ")";
+                        String f1 = answer.split(patern)[0];
+                        answer = answer.substring(110);
+                        String first = "Réponse attendue : " + f1;
+                        ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(first, little), x, y, 0);
+                        y -= 6;
+                        String pattern = "(?<=\\G";
+                        for (int wx = 0; wx < 124; wx += 4) {
+                            pattern += "....";
+                        }
+                        pattern += ")";
+                        String[] t = answer.split(pattern);
+                        for (String ts : t) {
+                            ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(ts, little), x, y, 0);
+                            y -= 6;
+                        }
+                    } else {
+                        s = new Phrase("Réponse attendue : " + quizz.getQuestions().get(i).getAnswer());
+                        ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, s, x, y, 0);
+                        y -= 6;
+                    }
                 }
-                ColumnText.showTextAligned(canvas, Element.ALIGN_LEFT, s, x, y, 0);
                 y -= 20;
             }
 
             document.close();
-
+            //TODO : MULTI LINE ANSWERS
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -136,7 +185,7 @@ public class CompletedQuizz {
         ArrayList<Questions> questions = new ArrayList<>();
         ArrayList<String> answers = new ArrayList<>();
         for (int i = 0; i < 21; i++) {
-            questions.add(new Questions("", "SDF", "DFEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEG", "SFGH!", "lol"));
+            questions.add(new Questions("", "SDF", "DFEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEG", "DFEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEG", "lol"));
             answers.add("Answer");
         }
         CompletedQuizz c = new CompletedQuizz(new Quizz(questions, "e", "e", (long) System.currentTimeMillis()), answers);
